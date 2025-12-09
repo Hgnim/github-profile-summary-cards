@@ -65,7 +65,7 @@ const getCommitsLanguageData = async function (
     langData.sort(function (a, b) {
         return b.value - a.value;
     });
-    langData = langData.slice(0, 5); // get top 5
+    //langData = langData.slice(0, 5); // get top 5
 
     return langData;
 };
