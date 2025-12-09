@@ -42,7 +42,7 @@ const fetcher = (token: string, variables: any) => {
           contributionsCollection {
             commitContributionsByRepository(maxRepositories: 100) {
               repository {
-                name  // 添加仓库名用于调试
+                name
                 languages(first: 100, orderBy: {field: SIZE, direction: DESC}) {
                   edges {
                     size

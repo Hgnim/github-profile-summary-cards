@@ -13,15 +13,17 @@ export function createDonutChartCard(
     });
     const pieData = pie(data);
     
-    // 🔥 动态计算高度：每个语言占 25px，最小高度 200px
+    // 🔥 计算总值用于百分比
+    const totalValue = data.reduce((sum, d) => sum + d.value, 0);
+    
+    // 动态高度（每个语言占25px，最小200px）
     const labelHeight = 14;
     const minHeight = 200;
     const dynamicHeight = Math.max(minHeight, 60 + data.length * labelHeight * 1.8);
     
-    const card = new Card(title, 340, dynamicHeight, theme);  // ← 使用动态高度
+    const card = new Card(title, 340, dynamicHeight, theme);
 
     const margin = 10;
-    // 重新计算半径，确保饼图不会太大
     const maxRadius = (Math.min(card.width, minHeight) - 2 * margin - card.yPadding) / 2;
     const radius = Math.min(maxRadius, dynamicHeight / 2 - margin);
 
@@ -31,41 +33,49 @@ export function createDonutChartCard(
         .innerRadius(radius / 2);
 
     const svg = card.getSVG();
-    
-    // 🔥 重新计算标签起始位置（基于顶部，而不是固定位置）
     const labelStartY = card.yPadding + 20;
     
-    // draw language labels
     const panel = svg.append('g').attr('transform', `translate(${card.xPadding + margin}, ${labelStartY})`);
     
+    // draw color rects
     panel
         .selectAll(null)
         .data(pieData)
         .enter()
         .append('rect')
-        .attr('y', (d, i) => i * labelHeight * 1.5)  // ← 相对位置
+        .attr('y', (d, i) => i * labelHeight * 1.5)
         .attr('width', labelHeight)
         .attr('height', labelHeight)
         .attr('fill', d => d.data.color)
         .attr('stroke', `${theme.background}`)
         .style('stroke-width', '1px');
 
-    // set language text
+    // 🔥 修改文本：名称 + 百分比
     panel
         .selectAll(null)
         .data(pieData)
         .enter()
         .append('text')
-        .text(d => d.data.name)
+        .text(d => {
+            const percentage = ((d.data.value / totalValue) * 100).toFixed(1);
+            return `${d.data.name} (${percentage}%)`;
+        })
         .attr('x', labelHeight * 1.2)
-        .attr('y', (d, i) => i * labelHeight * 1.5 + labelHeight * 0.8)  // ← 垂直居中
+        .attr('y', (d, i) => i * labelHeight * 1.5 + labelHeight * 0.8)
         .style('fill', theme.text)
         .style('font-size', `${labelHeight}px`);
-
-    // 🔥 重新计算饼图位置（垂直居中）
-    const pieCenterY = dynamicHeight / 2 - card.yPadding / 2;
     
+    // 🔥 如果文本过长，截断处理（可选）
+    // .each(function(d) {
+    //     const text = d3.select(this);
+    //     const fullText = text.text();
+    //     if (fullText.length > 25) {
+    //         text.text(fullText.substring(0, 22) + '...');
+    //     }
+    // });
+
     // draw pie chart
+    const pieCenterY = dynamicHeight / 2 - card.yPadding / 2;
     const g = svg
         .append('g')
         .attr(
