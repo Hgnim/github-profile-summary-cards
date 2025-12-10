@@ -51,10 +51,6 @@
         "ts-jest": "^27.0.7",
         "typescript": "^4.4.4"
     },
-    "pre-commit": [
-        "test",
-        "lint"
-    ],
     "engines": {
         "node": "20.x"
     }

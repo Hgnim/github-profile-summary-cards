@@ -57,7 +57,7 @@ export function createDonutChartCard(
         .enter()
         .append('text')
         .text(d => {
-            const percentage = ((d.data.value / totalValue) * 100).toFixed(1);
+            const percentage = ((d.data.value / totalValue) * 100).toFixed(4);
             return `${d.data.name} (${percentage}%)`;
         })
         .attr('x', labelHeight * 1.2)
